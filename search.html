@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Search — CN2000</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div id="site-nav"></div>
+    <main id="main">
+      <header class="page-hero">
+        <p class="eyebrow">Search</p>
+        <h1>Find a piece</h1>
+        <p>Type a product or brand. This searches the prototype catalogue only.</p>
+      </header>
+      <section class="section">
+        <form class="nav-search" action="search.html" method="get" role="search">
+          <input id="search-q" type="search" name="q" placeholder="Search" aria-label="Search" />
+        </form>
+        <div class="grid" id="search-results"></div>
+      </section>
+    </main>
+    <div id="site-footer"></div>
+    <script src="config.local.js"></script>
+    <script src="catalogue.js"></script>
+    <script src="app.js"></script>
+    <script>
+      const params = new URLSearchParams(window.location.search);
+      const q = (params.get("q") || "").trim();
+      const input = document.getElementById("search-q");
+      if (input) input.value = q;
+      const box = document.getElementById("search-results");
+      const items = typeof CN2000_CATALOGUE !== "undefined" ? CN2000_CATALOGUE.products : [];
+      const hits = q
+        ? items.filter((item) => (item.name + " " + (item.colour || "") + " " + (item.category || "")).toLowerCase().includes(q.toLowerCase()))
+        : [];
+      if (!q) box.innerHTML = '<p class="empty">Enter a search in the bar in the nav.</p>';
+      else if (!hits.length) box.innerHTML = '<p class="empty">No matches in this drop.</p>';
+      else {
+        box.innerHTML = hits
+          .map(
+            (item) =>
+              '<a class="pcard" href="' +
+              item.page +
+              '"><div class="pcard-meta"><span class="pcard-brand">' +
+              (item.category || "") +
+              '</span><h3>' +
+              item.name +
+              '</h3><div class="pcard-row"><span>AUD ' +
+              item.priceAud +
+              '</span><span class="status">' +
+              item.status +
+              "</span></div></div></a>"
+          )
+          .join("");
+      }
+    </script>
+  </body>
+</html>
